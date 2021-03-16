@@ -9,3 +9,7 @@ if __name__ == "__main__":
     tw['content'].replace('',np.nan,inplace=True)
     tw.dropna(subset=['content'],inplace=True)
     tw.to_csv('data/cleaned_tweets.csv', index=False)
+
+    qs = pd.read_csv('data/AskReddit.csv', usecols=['title'])
+    # qs['title_and_text'] = qs['title'] + qs['selftext']
+    qs.to_csv('data/cleaned_questions.csv', index=False)
