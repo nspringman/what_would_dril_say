@@ -18,7 +18,6 @@ qs = pd.read_csv('data/cleaned_questions.csv')['title'].tolist()
 #query_string = 'fruit and vegetables'
 # documents = ['cars drive on the road', 'tomatoes are actually fruit']
 
-query_string = qs[(int)(len(qs) * random.random())] # pick a random question
 # query_string = "Why do I sometimes feel that I am the most useless person in the world?"
 documents = tw
 
@@ -35,35 +34,42 @@ def preprocess(doc):
 
 # Preprocess the documents, including the query string
 corpus = [preprocess(document) for document in documents]
-query = preprocess(query_string)
-
 
 # Load the model: this is a big file, can take a while to download and open
 glove = api.load("glove-wiki-gigaword-50")    
 similarity_index = WordEmbeddingSimilarityIndex(glove)
 
 # Build the term dictionary, TF-idf model
-dictionary = Dictionary(corpus+[query])
+# dictionary = Dictionary(corpus+[query])
+dictionary = Dictionary(corpus)
 tfidf = TfidfModel(dictionary=dictionary)
 
 # Create the term similarity matrix.  
 similarity_matrix = SparseTermSimilarityMatrix(similarity_index, dictionary, tfidf)
 
-# Compute Soft Cosine Measure between the query and the documents.
-# From: https://github.com/RaRe-Technologies/gensim/blob/develop/docs/notebooks/soft_cosine_tutorial.ipynb
-query_tf = tfidf[dictionary.doc2bow(query)]
-
-index = SoftCosineSimilarity(
-            tfidf[[dictionary.doc2bow(document) for document in corpus]],
-            similarity_matrix)
-
-doc_similarity_scores = index[query_tf]
-
-# Output the sorted similarity scores and documents
-sorted_indexes = np.argsort(doc_similarity_scores)[::-1]
 output_file = open('semantic_comparison.txt','w+')
-output_file.write(query_string + '\n')
-for idx in sorted_indexes:
-    if(doc_similarity_scores[idx] == 0):
-        break
-    output_file.write(f'{idx} \t {doc_similarity_scores[idx]:0.3f} \t {documents[idx]} \n')
+
+for x in range (0,5):
+    query_string = qs[(int)(len(qs) * random.random())] # pick a random question
+    query = preprocess(query_string)
+
+    # Compute Soft Cosine Measure between the query and the documents.
+    # From: https://github.com/RaRe-Technologies/gensim/blob/develop/docs/notebooks/soft_cosine_tutorial.ipynb
+    query_tf = tfidf[dictionary.doc2bow(query)]
+
+    index = SoftCosineSimilarity(
+                tfidf[[dictionary.doc2bow(document) for document in corpus]],
+                similarity_matrix)
+
+    doc_similarity_scores = index[query_tf]
+
+    # Output the sorted similarity scores and documents
+    sorted_indexes = np.argsort(doc_similarity_scores)[::-1]
+    output_file.write(query_string + '\n')
+    ticks = 0
+    for idx in sorted_indexes:
+        ticks += 1
+        if ticks == 5:
+            break
+        output_file.write(f'{idx} \t {doc_similarity_scores[idx]:0.3f} \t {documents[idx]} \n')
+    output_file.write('\n')
