@@ -10,6 +10,7 @@ from gensim.similarities import SparseTermSimilarityMatrix
 from gensim.similarities import SoftCosineSimilarity
 import pandas as pd
 import random
+from nltk.corpus import stopwords
 
 tw = pd.read_csv('data/cleaned_tweets.csv')['content'].tolist()
 qs = pd.read_csv('data/cleaned_questions.csv')['title'].tolist()
@@ -17,11 +18,11 @@ qs = pd.read_csv('data/cleaned_questions.csv')['title'].tolist()
 #query_string = 'fruit and vegetables'
 # documents = ['cars drive on the road', 'tomatoes are actually fruit']
 
-# query_string = qs[(int)(len(qs) * random.random())] # pick a random question
-query_string = 'What is in Area 51?'
+query_string = qs[(int)(len(qs) * random.random())] # pick a random question
+# query_string = "Why do I sometimes feel that I am the most useless person in the world?"
 documents = tw
 
-stopwords = ['the', 'and', 'are', 'a']
+stopwords = set(stopwords.words('english'))
 
 # From: https://github.com/RaRe-Technologies/gensim/blob/develop/docs/notebooks/soft_cosine_tutorial.ipynb
 def preprocess(doc):
