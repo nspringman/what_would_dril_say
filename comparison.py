@@ -18,7 +18,7 @@ stop_words = set(stopwords.words('english'))
 
 # Interface lemma tokenizer from nltk with sklearn
 class LemmaTokenizer:
-    ignore_tokens = [',', '.', ';', ':', '"', '``', "''", '`', '[', ']', '?']
+    ignore_tokens = [',', '.', ';', ':', '"', '``', "''", '`', '[', ']', '?', 'reddit', 'nsfw']
     def __init__(self):
         self.wnl = WordNetLemmatizer()
     def __call__(self, doc):
@@ -28,7 +28,7 @@ class LemmaTokenizer:
 tokenizer = LemmaTokenizer()
 token_stop = tokenizer(' '.join(stop_words))
 
-for i in range(0,5):
+for i in range(0,10):
     search_terms = qs[(int)(len(qs) * random.random())]
     documents = tweets
 
