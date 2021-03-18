@@ -5,17 +5,19 @@ import os
 
 def rgb(r, g, b):
     return (r / 255, g/255, b/255)
+def rgba(r, g, b, a):
+    return (r / 255, g/255, b/255, a)
 
 with open('semantic_comparison.json') as f:
     data = json.load(f)
 
 def backgroundSquares(canvasWidth,canvasHeight):
-    squareSize = 10
-    buffer = 8
-    for x in range(0, canvasWidth - squareSize, squareSize):
-        for y in range(0, canvasHeight - squareSize, squareSize):
-            db.fill(*rgb(18 + (random.random() * buffer), 70 + (random.random() * buffer * 1.5), 40 + (random.random() * buffer)))
-            db.rect(x, y, x+squareSize, y+squareSize)
+    squareSize = 25
+    buffer = 20
+    for x in range(0, canvasWidth, squareSize):
+        for y in range(0, canvasHeight, squareSize):
+            db.fill(*rgba(18 + (random.random() * buffer), 70 + (random.random() * buffer * 1.5), 40 + (random.random() * buffer), 0.6))
+            db.rect(x, y, squareSize, squareSize)
 
 def backgroundImage(canvasWidth, canvasHeight):
     background_images = os.listdir('background_images/')
@@ -31,8 +33,8 @@ def backgroundImage(canvasWidth, canvasHeight):
 
 def introSlide(canvasWidth, canvasHeight, question):
     db.newPage(canvasWidth, canvasHeight)
-    # backgroundSquares(canvasWidth,canvasHeight)
     backgroundImage(canvasWidth, canvasHeight)
+    backgroundSquares(canvasWidth,canvasHeight)
     db.frameDuration(8)
 
     db.fill(1,1,1)
@@ -88,8 +90,8 @@ def answerSlide(canvasWidth, canvasHeight, answer):
     answer = "‘" + answer + "’"
 
     db.fill(1,1,1)
-    margin_bottom = 0.3 * canvasHeight
-    margin_sides = 0.1 * canvasHeight
+    margin_bottom = 0.4 * canvasHeight
+    margin_sides = 0.2 * canvasHeight
     db.polygon(
         (margin_sides, margin_bottom), 
         (canvasWidth - margin_sides, margin_bottom),
@@ -97,7 +99,7 @@ def answerSlide(canvasWidth, canvasHeight, answer):
         (margin_sides, canvasHeight - margin_sides)
     )
 
-    text_box_margin = margin_sides * 0.5
+    text_box_margin = margin_sides * 0.1
     text_box_width = canvasWidth - margin_sides * 2 - text_box_margin * 2
     text_box_height = canvasHeight - margin_sides - margin_bottom - text_box_margin * 2
     
