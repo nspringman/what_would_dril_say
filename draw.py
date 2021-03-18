@@ -43,9 +43,7 @@ def backgroundSquares(canvasWidth,canvasHeight):
 def introSlide(canvasWidth, canvasHeight, question):
     db.newPage(canvasWidth, canvasHeight)
     backgroundSquares(canvasWidth,canvasHeight)
-    db.frameDuration(3)
-
-    question = "‘" + question + "’"
+    db.frameDuration(8)
 
     db.fill(1,1,1)
     margin_bottom = 0.3 * canvasHeight
@@ -95,6 +93,8 @@ def answerSlide(canvasWidth, canvasHeight, answer):
     db.newPage(canvasWidth, canvasHeight)
     backgroundSquares(canvasWidth,canvasHeight)
     db.frameDuration(8)
+
+    answer = "‘" + answer + "’"
 
     db.fill(1,1,1)
     margin_bottom = 0.3 * canvasHeight
