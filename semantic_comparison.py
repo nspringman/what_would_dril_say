@@ -11,6 +11,7 @@ from gensim.similarities import SoftCosineSimilarity
 import pandas as pd
 import random
 from nltk.corpus import stopwords
+import json
 
 tw = pd.read_csv('data/cleaned_tweets.csv')['content'].tolist()
 qs = pd.read_csv('data/cleaned_questions.csv')['title'].tolist()
@@ -47,9 +48,10 @@ tfidf = TfidfModel(dictionary=dictionary)
 # Create the term similarity matrix.  
 similarity_matrix = SparseTermSimilarityMatrix(similarity_index, dictionary, tfidf)
 
-output_file = open('semantic_comparison.txt','w+')
+output_file = open('semantic_comparison.json','w+')
+output = []
 
-for x in range (0,5):
+for x in range (0,1):
     query_string = qs[(int)(len(qs) * random.random())] # pick a random question
     query = preprocess(query_string)
 
@@ -65,11 +67,19 @@ for x in range (0,5):
 
     # Output the sorted similarity scores and documents
     sorted_indexes = np.argsort(doc_similarity_scores)[::-1]
-    output_file.write(query_string + '\n')
+    output_obj = { 'question': query_string }
+    answer_array = []
     ticks = 0
     for idx in sorted_indexes:
         ticks += 1
         if ticks == 5:
             break
-        output_file.write(f'{idx} \t {doc_similarity_scores[idx]:0.3f} \t {documents[idx]} \n')
-    output_file.write('\n')
+        answer_array.append({
+            'answer': documents[idx],
+            'similarity': f'{doc_similarity_scores[idx]:0.3f}',
+            'sentiment': 0.6
+        })
+    output_obj['answers'] = answer_array
+    output.append(output_obj)
+
+json.dump(output, output_file)
