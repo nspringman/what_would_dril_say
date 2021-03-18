@@ -116,6 +116,7 @@ def answerSlide(canvasWidth, canvasHeight, answer):
 
 db.newDrawing()
 
+q_num = 0
 for q in data:
     canvasWidth = 500
     canvasHeight = 500
@@ -125,6 +126,8 @@ for q in data:
     for answer in q['answers']:
         answerSlide(canvasWidth, canvasHeight, answer['answer'])
 
-    db.saveImage('output/door.gif')
+    output_path = 'output/post_' + str(q_num) + '.gif'
+    db.saveImage(output_path)
+    q_num += 1
 
 db.endDrawing()
