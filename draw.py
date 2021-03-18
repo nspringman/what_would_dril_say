@@ -1,36 +1,12 @@
 import drawBot as db
 import random
+import json
 
 def rgb(r, g, b):
     return (r / 255, g/255, b/255)
 
-data = [
-    {
-        'question': 'Men of reddit, what is a man secret that you think every man should know?',
-        'answers': [
-            {
-                'answer': 'seems to me i am one of the only people on this earth who knows exactly how high they stack shit.',
-                'similarity': 0.735,
-                'sentiment': 0.8,
-            },
-            {
-                'answer': 'there are secret offices all over the country full of men in business attire who consume porn for 9 hrs and go home. they dont even jerk off',
-                'similarity': 0.681,
-                'sentiment': 0.6,
-            },
-            {
-                'answer': 'i rescind my 2009 tweet "bat man fucks joker", as i now understand, through the wisdom of age, that bat man adheres to a noble moral code',
-                'similarity': 0.678,
-                'sentiment': 0.3,
-            },
-            {
-                'answer': 'big bird was obviously just a man in a suit. but the other ones were too small to contain men. so what the fuck',
-                'similarity': 0.674,
-                'sentiment': 0.9,
-            },
-        ]
-    },
-]
+with open('semantic_comparison.json') as f:
+    data = json.load(f)
 
 def backgroundSquares(canvasWidth,canvasHeight):
     squareSize = 10
