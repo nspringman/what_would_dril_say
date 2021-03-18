@@ -40,7 +40,13 @@ def backgroundSquares(canvasWidth,canvasHeight):
             db.fill(*rgb(18 + (random.random() * buffer), 70 + (random.random() * buffer * 1.5), 40 + (random.random() * buffer)))
             db.rect(x, y, x+squareSize, y+squareSize)
 
-def introSlide(canvasHeight,canvasWidth, question):
+def introSlide(canvasWidth, canvasHeight, question):
+    db.newPage(canvasWidth, canvasHeight)
+    backgroundSquares(canvasWidth,canvasHeight)
+    db.frameDuration(3)
+
+    question = "‘" + question + "’"
+
     db.fill(1,1,1)
     margin_bottom = 0.3 * canvasHeight
     margin_sides = 0.1 * canvasHeight
@@ -62,7 +68,7 @@ def introSlide(canvasHeight,canvasWidth, question):
     while True:
         db.fontSize(current_font_size)
         current_font_size += 1
-        current_text_width, current_text_height = db.textSize(question, 'center', width=text_box_width)
+        _, current_text_height = db.textSize(question, 'center', width=text_box_width)
         # print(current_text_height)
         # print(text_box_height)
         if(current_font_size > 150):
@@ -85,17 +91,63 @@ def introSlide(canvasHeight,canvasWidth, question):
         'center'
     )
 
+def answerSlide(canvasWidth, canvasHeight, answer):
+    db.newPage(canvasWidth, canvasHeight)
+    backgroundSquares(canvasWidth,canvasHeight)
+    db.frameDuration(8)
+
+    db.fill(1,1,1)
+    margin_bottom = 0.3 * canvasHeight
+    margin_sides = 0.1 * canvasHeight
+    db.polygon(
+        (margin_sides, margin_bottom), 
+        (canvasWidth - margin_sides, margin_bottom),
+        (canvasWidth - margin_sides, canvasHeight - margin_sides),
+        (margin_sides, canvasHeight - margin_sides)
+    )
+
+    text_box_margin = margin_sides * 0.5
+    text_box_width = canvasWidth - margin_sides * 2 - text_box_margin * 2
+    text_box_height = canvasHeight - margin_sides - margin_bottom - text_box_margin * 2
+    
+    current_font_size = 10
+    db.font('Georgia', current_font_size)
+
+    # this is not efficient. Don't show anyone I made this
+    while True:
+        db.fontSize(current_font_size)
+        current_font_size += 1
+        _, current_text_height = db.textSize(answer, 'left', width=text_box_width)
+        if(current_font_size > 150):
+            break
+        elif(current_text_height > text_box_height):
+            current_font_size -= 2
+            break
+
+    db.fontSize(current_font_size)
+
+    db.fill(0,0,0)
+    db.textBox(
+        answer,
+        (
+            margin_sides + text_box_margin, 
+            margin_bottom + text_box_margin,
+            text_box_width,
+            text_box_height
+        ),
+        'left'
+    )
+
 db.newDrawing()
 
 for q in data:
     canvasWidth = 500
     canvasHeight = 500
-    db.newPage(canvasWidth, canvasHeight)
-
-    backgroundSquares(canvasWidth,canvasHeight)
 
     introSlide(canvasWidth, canvasHeight, q['question'])
     
+    for answer in q['answers']:
+        answerSlide(canvasWidth, canvasHeight, answer['answer'])
 
     db.saveImage('output/door.gif')
 
