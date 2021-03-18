@@ -1,6 +1,7 @@
 import drawBot as db
 import random
 import json
+import os
 
 def rgb(r, g, b):
     return (r / 255, g/255, b/255)
@@ -16,9 +17,22 @@ def backgroundSquares(canvasWidth,canvasHeight):
             db.fill(*rgb(18 + (random.random() * buffer), 70 + (random.random() * buffer * 1.5), 40 + (random.random() * buffer)))
             db.rect(x, y, x+squareSize, y+squareSize)
 
+def backgroundImage(canvasWidth, canvasHeight):
+    background_images = os.listdir('background_images/')
+    background_image_path = 'background_images/' + background_images[(int)(len(background_images) * random.random())]
+    # https://forum.drawbot.com/topic/180/how-do-i-size-an-image-with-the-imageobject-or-without/4
+    srcWidth, srcHeight = db.imageSize(background_image_path)
+    dstWidth, dstHeight = 500, 500
+    factorWidth  = dstWidth  / srcWidth
+    factorHeight = dstHeight / srcHeight
+    with db.savedState():
+        db.scale(factorWidth, factorHeight)
+        db.image(background_image_path, (0, 0))
+
 def introSlide(canvasWidth, canvasHeight, question):
     db.newPage(canvasWidth, canvasHeight)
-    backgroundSquares(canvasWidth,canvasHeight)
+    # backgroundSquares(canvasWidth,canvasHeight)
+    backgroundImage(canvasWidth, canvasHeight)
     db.frameDuration(8)
 
     db.fill(1,1,1)
@@ -67,7 +81,8 @@ def introSlide(canvasWidth, canvasHeight, question):
 
 def answerSlide(canvasWidth, canvasHeight, answer):
     db.newPage(canvasWidth, canvasHeight)
-    backgroundSquares(canvasWidth,canvasHeight)
+    # backgroundSquares(canvasWidth,canvasHeight)
+    backgroundImage(canvasWidth, canvasHeight)
     db.frameDuration(8)
 
     answer = "‘" + answer + "’"
