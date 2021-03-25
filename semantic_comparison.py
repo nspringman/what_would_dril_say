@@ -12,6 +12,7 @@ import pandas as pd
 import random
 from nltk.corpus import stopwords
 import json
+import time
 
 tw = pd.read_csv('data/cleaned_tweets.csv')['content'].tolist()
 qs = pd.read_csv('data/cleaned_questions.csv')['title'].tolist()
@@ -23,7 +24,7 @@ qs = pd.read_csv('data/cleaned_questions.csv')['title'].tolist()
 documents = tw
 
 stopwords = set(stopwords.words('english'))
-
+start = time.time()
 # From: https://github.com/RaRe-Technologies/gensim/blob/develop/docs/notebooks/soft_cosine_tutorial.ipynb
 def preprocess(doc):
     # Tokenize, clean up input document string
@@ -36,6 +37,7 @@ def preprocess(doc):
 # Preprocess the documents, including the query string
 corpus = [preprocess(document) for document in documents]
 
+print(time.time() - start)
 # Load the model: this is a big file, can take a while to download and open
 glove = api.load("glove-wiki-gigaword-50")    
 similarity_index = WordEmbeddingSimilarityIndex(glove)
@@ -44,14 +46,14 @@ similarity_index = WordEmbeddingSimilarityIndex(glove)
 # dictionary = Dictionary(corpus+[query])
 dictionary = Dictionary(corpus)
 tfidf = TfidfModel(dictionary=dictionary)
-
+print(time.time() - start)
 # Create the term similarity matrix.  
 similarity_matrix = SparseTermSimilarityMatrix(similarity_index, dictionary, tfidf)
-
+print(time.time() - start)
 output_file = open('semantic_comparison.json','w+')
 output = []
 
-for x in range (0,1):
+for x in range (0,300):
     query_string = qs[(int)(len(qs) * random.random())] # pick a random question
     query = preprocess(query_string)
 
@@ -82,4 +84,6 @@ for x in range (0,1):
     output_obj['answers'] = answer_array
     output.append(output_obj)
 
+end = time.time()
+print(end - start)
 json.dump(output, output_file)
