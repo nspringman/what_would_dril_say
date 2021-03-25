@@ -24,7 +24,7 @@ def backgroundImage(canvasWidth, canvasHeight):
     background_image_path = 'background_images/' + background_images[(int)(len(background_images) * random.random())]
     # https://forum.drawbot.com/topic/180/how-do-i-size-an-image-with-the-imageobject-or-without/4
     srcWidth, srcHeight = db.imageSize(background_image_path)
-    dstWidth, dstHeight = 500, 500
+    dstWidth, dstHeight = canvasWidth, canvasHeight
     factorWidth  = dstWidth  / srcWidth
     factorHeight = dstHeight / srcHeight
     with db.savedState():
@@ -52,7 +52,7 @@ def introSlide(canvasWidth, canvasHeight, question):
     text_box_height = canvasHeight - margin_sides - margin_bottom - text_box_margin * 2
     
     current_font_size = 10
-    db.font('Georgia-Italic', current_font_size)
+    db.font('BodoniSvtyTwoOSITCTT-BookIt', current_font_size)
 
     # this is not efficient. Don't show anyone I made this
     while True:
@@ -87,7 +87,7 @@ def answerSlide(canvasWidth, canvasHeight, answer):
     backgroundImage(canvasWidth, canvasHeight)
     db.frameDuration(4)
 
-    answer = "‘" + answer + "’"
+    # answer = "‘" + answer + "’"
 
     db.fill(1,1,1)
     margin_bottom = 0.4 * canvasHeight
@@ -108,7 +108,7 @@ def answerSlide(canvasWidth, canvasHeight, answer):
     text_box_height = box_height - text_box_margin * 2
     
     current_font_size = 10
-    db.font('Georgia', current_font_size)
+    db.font('PingFangHK-Ultralight', current_font_size)
 
     # this is not efficient. Don't show anyone I made this
     while True:
@@ -134,12 +134,20 @@ def answerSlide(canvasWidth, canvasHeight, answer):
         'left'
     )
 
+    db.font('CooperBlackMS', 80)
+    db.fill(*rgb(235, 64, 52))
+    d_says = '@dril says:'
+    # _,d_says_height = db.textSize(d_says, 'left', width=canvasWidth * 0.5)
+    db.text(d_says, (x_0, y_0 + box_height + 30))
+
 db.newDrawing()
 
 q_num = 0
-for q in data:
-    canvasWidth = 500
-    canvasHeight = 500
+# for q in data:
+for x in range (0,1):
+    q = random.choice(data)
+    canvasWidth = 800
+    canvasHeight = 800
 
     introSlide(canvasWidth, canvasHeight, q['question'])
     
