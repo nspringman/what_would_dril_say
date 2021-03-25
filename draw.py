@@ -103,9 +103,9 @@ def answerSlide(canvasWidth, canvasHeight, answer):
         (x_0, y_0 + box_height)
     )
 
-    text_box_margin = 20
-    text_box_width = box_width - text_box_margin
-    text_box_height = box_height - text_box_margin
+    text_box_margin = 40
+    text_box_width = box_width - text_box_margin * 2
+    text_box_height = box_height - text_box_margin * 2
     
     current_font_size = 10
     db.font('Georgia', current_font_size)
