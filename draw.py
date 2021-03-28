@@ -34,7 +34,9 @@ def backgroundImage(canvasWidth, canvasHeight):
 def introSlide(canvasWidth, canvasHeight, question):
     db.newPage(canvasWidth, canvasHeight)
     backgroundImage(canvasWidth, canvasHeight)
-    backgroundSquares(canvasWidth,canvasHeight)
+    db.fill(*rgb(94, 174, 235))
+    db.rect(0, 0, canvasWidth, canvasHeight)
+    # backgroundSquares(canvasWidth,canvasHeight)
     db.frameDuration(2)
 
     db.fill(1,1,1)
@@ -81,17 +83,39 @@ def introSlide(canvasWidth, canvasHeight, question):
         'center'
     )
 
-def answerSlide(canvasWidth, canvasHeight, answer):
+def answerSlide(canvasWidth, canvasHeight, answer, polarity):
     db.newPage(canvasWidth, canvasHeight)
-    # backgroundSquares(canvasWidth,canvasHeight)
-    backgroundImage(canvasWidth, canvasHeight)
+    if polarity < -0.25:
+        background_fill = (1, 1-abs(polarity / 0.75), 1-abs(polarity / 0.75))
+    elif polarity < 0.25:
+        background_fill = (1-abs(abs(polarity) / 0.5), 1-abs(abs(polarity) / 0.5), 1)
+    else:
+        background_fill = (1, 1, 1-abs(polarity / 0.75))
+    db.fill(*background_fill)
+    db.frameDuration(4)
+    db.rect(0, 0, canvasWidth, canvasHeight)
+
+    background_images = os.listdir('background_images/')
+    background_image_path = 'background_images/' + background_images[(int)(len(background_images) * random.random())]
+    # https://forum.drawbot.com/topic/180/how-do-i-size-an-image-with-the-imageobject-or-without/4
+    srcWidth, srcHeight = db.imageSize(background_image_path)
+    dstWidth, dstHeight = canvasWidth * 0.5, canvasWidth * 0.5
+    factorWidth  = dstWidth  / srcWidth
+    factorHeight = dstHeight / srcHeight
+    with db.savedState():
+        db.translate(canvasWidth * 0.25, canvasWidth * 0.35)
+        with db.savedState():
+            db.scale(factorWidth, factorHeight)
+            db.image(background_image_path, (10, 10))
+
+
+
+    db.newPage(canvasWidth, canvasHeight)
+    db.fill(*background_fill)
+    db.rect(0, 0, canvasWidth, canvasHeight)
     db.frameDuration(4)
 
-    # answer = "‘" + answer + "’"
-
     db.fill(1,1,1)
-    margin_bottom = 0.4 * canvasHeight
-    margin_sides = 0.15 * canvasHeight
     box_width =  0.7 * canvasWidth
     box_height = canvasHeight * 0.55
     x_0 = 20 + ((canvasWidth - 40 - box_width) * random.random())
@@ -152,7 +176,7 @@ for x in range (0,1):
     introSlide(canvasWidth, canvasHeight, q['question'])
     
     for answer in q['answers']:
-        answerSlide(canvasWidth, canvasHeight, answer['answer'])
+        answerSlide(canvasWidth, canvasHeight, answer['answer'], random.random())
 
     output_path = 'output/post_' + str(q_num) + '.gif'
     db.saveImage(output_path)
