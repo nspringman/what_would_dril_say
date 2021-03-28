@@ -13,14 +13,11 @@ import random
 from nltk.corpus import stopwords
 import json
 import time
+from textblob import TextBlob
 
 tw = pd.read_csv('data/cleaned_tweets.csv')['content'].tolist()
 qs = pd.read_csv('data/cleaned_questions.csv')['title'].tolist()
 
-#query_string = 'fruit and vegetables'
-# documents = ['cars drive on the road', 'tomatoes are actually fruit']
-
-# query_string = "Why do I sometimes feel that I am the most useless person in the world?"
 documents = tw
 
 stopwords = set(stopwords.words('english'))
@@ -53,7 +50,7 @@ print(time.time() - start)
 output_file = open('semantic_comparison.json','w+')
 output = []
 
-for x in range (0,300):
+for x in range (0,1):
     query_string = qs[(int)(len(qs) * random.random())] # pick a random question
     query = preprocess(query_string)
 
@@ -79,7 +76,7 @@ for x in range (0,300):
         answer_array.append({
             'answer': documents[idx],
             'similarity': f'{doc_similarity_scores[idx]:0.3f}',
-            'sentiment': 0.6
+            'polarity': TextBlob(documents[idx]).polarity
         })
     output_obj['answers'] = answer_array
     output.append(output_obj)
