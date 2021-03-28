@@ -40,14 +40,14 @@ def introSlide(canvasWidth, canvasHeight, question):
     db.frameDuration(2)
 
     db.fill(1,1,1)
-    margin_bottom = 0.3 * canvasHeight
+    margin_bottom = 0.2 * canvasHeight
     margin_sides = 0.1 * canvasHeight
-    db.polygon(
-        (margin_sides, margin_bottom), 
-        (canvasWidth - margin_sides, margin_bottom),
-        (canvasWidth - margin_sides, canvasHeight - margin_sides),
-        (margin_sides, canvasHeight - margin_sides)
-    )
+    # db.polygon(
+    #     (margin_sides, margin_bottom), 
+    #     (canvasWidth - margin_sides, margin_bottom),
+    #     (canvasWidth - margin_sides, canvasHeight - margin_sides),
+    #     (margin_sides, canvasHeight - margin_sides)
+    # )
 
     text_box_margin = margin_sides * 0.5
     text_box_width = canvasWidth - margin_sides * 2 - text_box_margin * 2
@@ -71,7 +71,7 @@ def introSlide(canvasWidth, canvasHeight, question):
 
     db.fontSize(current_font_size)
 
-    db.fill(0,0,0)
+    db.fill(1)
     db.textBox(
         question,
         (
@@ -86,29 +86,50 @@ def introSlide(canvasWidth, canvasHeight, question):
 def answerSlide(canvasWidth, canvasHeight, answer, polarity):
     db.newPage(canvasWidth, canvasHeight)
     if polarity < -0.25:
-        background_fill = (1, 1-abs(polarity / 0.75), 1-abs(polarity / 0.75))
+        # background_fill = (1, 1-abs(polarity / 0.75), 1-abs(polarity / 0.75))
+        background_fill = rgb(227, 30, 0)
     elif polarity < 0.25:
-        background_fill = (1-abs(abs(polarity) / 0.5), 1-abs(abs(polarity) / 0.5), 1)
+        # background_fill = (1-abs(abs(polarity) / 0.5), 1-abs(abs(polarity) / 0.5), 1)
+        background_fill = rgb(222, 149, 2)
     else:
-        background_fill = (1, 1, 1-abs(polarity / 0.75))
+        # background_fill = (1, 1, 1-abs(polarity / 0.75))
+        background_fill = rgb(3, 181, 0)
     db.fill(*background_fill)
     db.frameDuration(4)
     db.rect(0, 0, canvasWidth, canvasHeight)
 
-    background_images = os.listdir('background_images/')
-    background_image_path = 'background_images/' + background_images[(int)(len(background_images) * random.random())]
+    # background_images = os.listdir('background_images/')
+    # background_image_path = 'background_images/' + background_images[(int)(len(background_images) * random.random())]
     # https://forum.drawbot.com/topic/180/how-do-i-size-an-image-with-the-imageobject-or-without/4
-    srcWidth, srcHeight = db.imageSize(background_image_path)
-    dstWidth, dstHeight = canvasWidth * 0.5, canvasWidth * 0.5
-    factorWidth  = dstWidth  / srcWidth
-    factorHeight = dstHeight / srcHeight
-    with db.savedState():
-        db.translate(canvasWidth * 0.25, canvasWidth * 0.35)
-        with db.savedState():
-            db.scale(factorWidth, factorHeight)
-            db.image(background_image_path, (10, 10))
+    # srcWidth, srcHeight = db.imageSize(background_image_path)
+    # dstWidth, dstHeight = canvasWidth * 0.5, canvasWidth * 0.5
+    # factorWidth  = dstWidth  / srcWidth
+    # factorHeight = dstHeight / srcHeight
+    # with db.savedState():
+    #     db.translate(canvasWidth * 0.25, canvasWidth * 0.35)
+    #     with db.savedState():
+    #         db.scale(factorWidth, factorHeight)
+    #         db.image(background_image_path, (10, 10))
+    backgroundImage(canvasWidth, canvasHeight)
 
+    dril_feels_text = db.FormattedString()
+    dril_feels_text.append("@dril feels", font="Calibri-Bold", fontSize=150, fill=rgb(255, 255, 0), align='center', stroke=rgb(47, 89, 237), strokeWidth=3.5)
+    db.text(dril_feels_text, (canvasWidth / 2, canvasHeight - 200))
+    
+    if polarity < -0.25:
+        drils_feeling = "angry"
+        db.font("LucidaBlackletter", 100)
+    elif polarity < 0.25:
+        drils_feeling = "neutral"
+        db.font("Helvetica", 180)
+    else:
+        drils_feeling = "happy"
+        db.font("Cortado", 250)
 
+    db.fill(1)
+    # db.stroke(0)
+    db.strokeWidth(1)
+    db.text(drils_feeling, (canvasWidth / 2, 250), align='center')
 
     db.newPage(canvasWidth, canvasHeight)
     db.fill(*background_fill)
@@ -158,7 +179,7 @@ def answerSlide(canvasWidth, canvasHeight, answer, polarity):
         'left'
     )
 
-    db.font('CooperBlackMS', 80)
+    db.font('Calibri-Bold', 80)
     db.fill(*rgb(235, 64, 52))
     d_says = '@dril says:'
     # _,d_says_height = db.textSize(d_says, 'left', width=canvasWidth * 0.5)
