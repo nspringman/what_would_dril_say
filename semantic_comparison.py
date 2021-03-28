@@ -50,7 +50,7 @@ print(time.time() - start)
 output_file = open('semantic_comparison.json','w+')
 output = []
 
-for x in range (0,1):
+for x in range (0,300):
     query_string = qs[(int)(len(qs) * random.random())] # pick a random question
     query = preprocess(query_string)
 
