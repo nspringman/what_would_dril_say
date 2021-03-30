@@ -2,6 +2,7 @@ import drawBot as db
 import random
 import json
 import os
+from colorsys import hls_to_rgb
 
 def rgb(r, g, b):
     return (r / 255, g/255, b/255)
@@ -12,11 +13,13 @@ with open('semantic_comparison.json') as f:
     data = json.load(f)
 
 def backgroundSquares(canvasWidth,canvasHeight):
-    squareSize = 25
-    buffer = 20
+    squareSize = 50
+    buffer = 0.2
+    base_color = hls_to_rgb(random.random(), 0.5, 1)
+    print(base_color)
     for x in range(0, canvasWidth, squareSize):
         for y in range(0, canvasHeight, squareSize):
-            db.fill(*rgba(18 + (random.random() * buffer), 70 + (random.random() * buffer * 1.5), 40 + (random.random() * buffer), 0.6))
+            db.fill(base_color[0] + (random.random() * buffer), base_color[1] + (random.random() * buffer), base_color[2] + (random.random() * buffer), 0.3)
             db.rect(x, y, squareSize, squareSize)
 
 def backgroundImage(canvasWidth, canvasHeight):
@@ -35,26 +38,20 @@ def introSlide(canvasWidth, canvasHeight, question):
     db.newPage(canvasWidth, canvasHeight)
     backgroundImage(canvasWidth, canvasHeight)
     db.fill(*rgb(94, 174, 235))
-    db.rect(0, 0, canvasWidth, canvasHeight)
-    # backgroundSquares(canvasWidth,canvasHeight)
+    # db.rect(0, 0, canvasWidth, canvasHeight)
+    backgroundSquares(canvasWidth,canvasHeight)
     db.frameDuration(2)
 
     db.fill(1,1,1)
-    margin_bottom = 0.2 * canvasHeight
+    margin_bottom = 0.1 * canvasHeight
     margin_sides = 0.1 * canvasHeight
-    # db.polygon(
-    #     (margin_sides, margin_bottom), 
-    #     (canvasWidth - margin_sides, margin_bottom),
-    #     (canvasWidth - margin_sides, canvasHeight - margin_sides),
-    #     (margin_sides, canvasHeight - margin_sides)
-    # )
 
     text_box_margin = margin_sides * 0.5
     text_box_width = canvasWidth - margin_sides * 2 - text_box_margin * 2
     text_box_height = canvasHeight - margin_sides - margin_bottom - text_box_margin * 2
     
     current_font_size = 10
-    db.font('BodoniSvtyTwoOSITCTT-BookIt', current_font_size)
+    db.font('ArialNarrow-Bold', current_font_size)
 
     # this is not efficient. Don't show anyone I made this
     while True:
@@ -71,7 +68,7 @@ def introSlide(canvasWidth, canvasHeight, question):
 
     db.fontSize(current_font_size)
 
-    db.fill(1)
+    db.fill(*rgb(255, 252, 61))
     db.textBox(
         question,
         (
@@ -85,7 +82,8 @@ def introSlide(canvasWidth, canvasHeight, question):
 
 def answerSlide(canvasWidth, canvasHeight, answer, polarity):
     db.newPage(canvasWidth, canvasHeight)
-    if polarity < -0.25:
+    
+    if polarity < -0.1:
         # background_fill = (1, 1-abs(polarity / 0.75), 1-abs(polarity / 0.75))
         background_fill = rgb(227, 30, 0)
     elif polarity < 0.25:
@@ -98,27 +96,27 @@ def answerSlide(canvasWidth, canvasHeight, answer, polarity):
     db.frameDuration(4)
     db.rect(0, 0, canvasWidth, canvasHeight)
 
-    # background_images = os.listdir('background_images/')
-    # background_image_path = 'background_images/' + background_images[(int)(len(background_images) * random.random())]
+    background_images = os.listdir('background_images/')
+    background_image_path = 'background_images/' + background_images[(int)(len(background_images) * random.random())]
     # https://forum.drawbot.com/topic/180/how-do-i-size-an-image-with-the-imageobject-or-without/4
-    # srcWidth, srcHeight = db.imageSize(background_image_path)
-    # dstWidth, dstHeight = canvasWidth * 0.5, canvasWidth * 0.5
-    # factorWidth  = dstWidth  / srcWidth
-    # factorHeight = dstHeight / srcHeight
-    # with db.savedState():
-    #     db.translate(canvasWidth * 0.25, canvasWidth * 0.35)
-    #     with db.savedState():
-    #         db.scale(factorWidth, factorHeight)
-    #         db.image(background_image_path, (10, 10))
-    backgroundImage(canvasWidth, canvasHeight)
+    srcWidth, srcHeight = db.imageSize(background_image_path)
+    dstWidth, dstHeight = canvasWidth - 50, canvasHeight- 50
+    factorWidth  = dstWidth  / srcWidth
+    factorHeight = dstHeight / srcHeight
+    with db.savedState():
+        db.translate(25, 25)
+        with db.savedState():
+            db.scale(factorWidth, factorHeight)
+            db.image(background_image_path, (0, 0))
 
     dril_feels_text = db.FormattedString()
-    dril_feels_text.append("@dril feels", font="Calibri-Bold", fontSize=150, fill=rgb(255, 255, 0), align='center', stroke=rgb(47, 89, 237), strokeWidth=3.5)
-    db.text(dril_feels_text, (canvasWidth / 2, canvasHeight - 200))
+    dril_feels_text.append("@dril feels", font="Calibri-Bold", fontSize=150, fill=1, align='center', stroke=background_fill, strokeWidth=0.5)
+    db.shadow((0,0), 50, background_fill)
+    db.text(dril_feels_text, (canvasWidth / 2, canvasHeight - 300))
     
-    if polarity < -0.25:
+    if polarity < -0.1:
         drils_feeling = "angry"
-        db.font("LucidaBlackletter", 100)
+        db.font("LucidaBlackletter", 250)
     elif polarity < 0.25:
         drils_feeling = "neutral"
         db.font("Helvetica", 180)
@@ -127,33 +125,38 @@ def answerSlide(canvasWidth, canvasHeight, answer, polarity):
         db.font("Cortado", 250)
 
     db.fill(1)
-    # db.stroke(0)
-    db.strokeWidth(1)
+    db.shadow((0,0), 50, background_fill)
     db.text(drils_feeling, (canvasWidth / 2, 250), align='center')
 
     db.newPage(canvasWidth, canvasHeight)
     db.fill(*background_fill)
     db.rect(0, 0, canvasWidth, canvasHeight)
     db.frameDuration(4)
+    background_images = os.listdir('background_images/')
+    background_image_path = 'background_images/' + background_images[(int)(len(background_images) * random.random())]
+    # https://forum.drawbot.com/topic/180/how-do-i-size-an-image-with-the-imageobject-or-without/4
+    srcWidth, srcHeight = db.imageSize(background_image_path)
+    dstWidth, dstHeight = canvasWidth - 50, canvasHeight- 50
+    factorWidth  = dstWidth  / srcWidth
+    factorHeight = dstHeight / srcHeight
+    with db.savedState():
+        db.translate(25, 25)
+        with db.savedState():
+            db.scale(factorWidth, factorHeight)
+            db.image(background_image_path, (0, 0))
 
-    db.fill(1,1,1)
+    db.fill(*rgba(*background_fill, 0.1))
     box_width =  0.7 * canvasWidth
-    box_height = canvasHeight * 0.55
-    x_0 = 20 + ((canvasWidth - 40 - box_width) * random.random())
-    y_0 = 20 + ((canvasHeight * 0.85 - box_height) * random.random()) # canvasHeight * z gives top margin
-    db.polygon(
-        (x_0, y_0), 
-        (x_0 + box_width, y_0),
-        (x_0 + box_width, y_0 + box_height),
-        (x_0, y_0 + box_height)
-    )
+    box_height = canvasHeight * 0.7    
+    x_0 = (canvasWidth - box_width) / 2
+    y_0 = (canvasHeight - box_height) / 2 - 100
 
     text_box_margin = 40
     text_box_width = box_width - text_box_margin * 2
     text_box_height = box_height - text_box_margin * 2
     
     current_font_size = 10
-    db.font('PingFangHK-Ultralight', current_font_size)
+    db.font('Calibri-Bold', current_font_size)
 
     # this is not efficient. Don't show anyone I made this
     while True:
@@ -167,22 +170,24 @@ def answerSlide(canvasWidth, canvasHeight, answer, polarity):
             break
 
     db.fontSize(current_font_size)
-    db.fill(0,0,0)
+    db.stroke(*background_fill)
+    db.strokeWidth(0.5)
+    db.fill(*rgb(255, 252, 61))
     db.textBox(
         answer,
         (
-            x_0 + text_box_margin, 
-            y_0 + text_box_margin,
-            text_box_width,
-            text_box_height
+            x_0, 
+            y_0,
+            box_width,
+            box_height
         ),
         'left'
     )
 
-    db.font('Calibri-Bold', 80)
-    db.fill(*rgb(235, 64, 52))
-    d_says = '@dril says:'
-    # _,d_says_height = db.textSize(d_says, 'left', width=canvasWidth * 0.5)
+    # dril says
+    d_says = db.FormattedString()    
+    d_says.append("@dril says:", font="Calibri-Bold", fontSize=100, fill=rgb(255, 252, 61), stroke=background_fill, strokeWidth=2)
+    # db.shadow((0,0), 50, background_fill)
     db.text(d_says, (x_0, y_0 + box_height + 30))
 
 db.newDrawing()
