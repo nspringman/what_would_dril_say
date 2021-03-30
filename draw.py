@@ -16,7 +16,6 @@ def backgroundSquares(canvasWidth,canvasHeight):
     squareSize = 50
     buffer = 0.2
     base_color = hls_to_rgb(random.random(), 0.5, 1)
-    print(base_color)
     for x in range(0, canvasWidth, squareSize):
         for y in range(0, canvasHeight, squareSize):
             db.fill(base_color[0] + (random.random() * buffer), base_color[1] + (random.random() * buffer), base_color[2] + (random.random() * buffer), 0.3)
@@ -80,18 +79,19 @@ def introSlide(canvasWidth, canvasHeight, question):
         'center'
     )
 
-def answerSlide(canvasWidth, canvasHeight, answer, polarity):
+def polarityBackground(polarity):
+    if polarity < -0.1:
+        return rgb(227, 30, 0)
+    elif polarity < 0.25:
+        return rgb(222, 149, 2)
+    else:
+        return rgb(3, 181, 0)
+
+def feelingSlide(canvasWidth, canvasHeight, polarity):
     db.newPage(canvasWidth, canvasHeight)
     
-    if polarity < -0.1:
-        # background_fill = (1, 1-abs(polarity / 0.75), 1-abs(polarity / 0.75))
-        background_fill = rgb(227, 30, 0)
-    elif polarity < 0.25:
-        # background_fill = (1-abs(abs(polarity) / 0.5), 1-abs(abs(polarity) / 0.5), 1)
-        background_fill = rgb(222, 149, 2)
-    else:
-        # background_fill = (1, 1, 1-abs(polarity / 0.75))
-        background_fill = rgb(3, 181, 0)
+    background_fill = polarityBackground(polarity)
+    
     db.fill(*background_fill)
     db.frameDuration(4)
     db.rect(0, 0, canvasWidth, canvasHeight)
@@ -128,6 +128,8 @@ def answerSlide(canvasWidth, canvasHeight, answer, polarity):
     db.shadow((0,0), 50, background_fill)
     db.text(drils_feeling, (canvasWidth / 2, 250), align='center')
 
+def answerSlide(canvasWidth, canvasHeight, answer, polarity):
+    background_fill = polarityBackground(polarity)
     db.newPage(canvasWidth, canvasHeight)
     db.fill(*background_fill)
     db.rect(0, 0, canvasWidth, canvasHeight)
@@ -194,19 +196,32 @@ db.newDrawing()
 
 q_num = 0
 # for q in data:
-for x in range (0,1):
+for x in range (0,40):
     q = random.choice(data)
     canvasWidth = 800
     canvasHeight = 800
 
+    directory_path = './output/posts/post_' + str(x)
+    try:
+        os.mkdir(directory_path, 0o777)
+    except OSError as e:
+        pass
     introSlide(canvasWidth, canvasHeight, q['question'])
-    
-    for answer in q['answers']:
-        answerSlide(canvasWidth, canvasHeight, answer['answer'], random.random())
-
-    output_path = 'output/post_' + str(q_num) + '.gif'
+    output_path = directory_path + '/slide_0.png'
     db.saveImage(output_path)
+
+    answer_number = 1
+    for answer in q['answers']:
+        output_path = directory_path + '/slide_' + str(answer_number) + '_0.png'
+        feelingSlide(canvasWidth, canvasHeight, answer['polarity'])
+        db.saveImage(output_path)
+
+        output_path = directory_path + '/slide_' + str(answer_number) + '_1.png'
+        answerSlide(canvasWidth, canvasHeight, answer['answer'], answer['polarity'])
+        db.saveImage(output_path)
+
+        answer_number += 1
+
     q_num += 1
-    break #for now, only do one post
 
 db.endDrawing()
